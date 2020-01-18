@@ -1,15 +1,17 @@
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
+using System.Reflection;
+using MediatR;
+using MicroRabbit.Banking.Data.Context;
+using MicroRabbit.Infra.IoC;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 
 namespace MicroRabbit.Banking.Api
 {
@@ -25,7 +27,30 @@ namespace MicroRabbit.Banking.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("BankingDbConnection")));
+
             services.AddControllers();
+
+            services.AddMediatR(cfg => cfg.AsScoped(), typeof(Startup).Assembly);
+
+            services.AddSwaggerGen(c =>
+            {
+                c.CustomSchemaIds(x => x.FullName);
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Banking Microservice", Version = "v1" });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
+
+            RegisterServices(services);
+        }
+
+        private void RegisterServices(IServiceCollection services)
+        {
+           DependencyContainer.RegisterServices(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,6 +66,20 @@ namespace MicroRabbit.Banking.Api
             app.UseRouting();
 
             app.UseAuthorization();
+
+            #region swagger config
+            //please add into project
+            //<PropertyGroup >
+            //  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+            //  <NoWarn>$(NoWarn);1591</NoWarn>
+            //</PropertyGroup>
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Banking Microservice");
+                c.RoutePrefix = string.Empty;
+            });
+            #endregion
 
             app.UseEndpoints(endpoints =>
             {
