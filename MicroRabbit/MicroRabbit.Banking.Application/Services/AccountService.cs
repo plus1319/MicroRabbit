@@ -30,7 +30,7 @@ namespace MicroRabbit.Banking.Application.Services
                 accountTransfer.ToAccount,
                 accountTransfer.TransferAmount
             );
-            //send 
+            //send to cqrs to raise handler
             _bus.SendCommand(createTransferCommand);
 
         }
