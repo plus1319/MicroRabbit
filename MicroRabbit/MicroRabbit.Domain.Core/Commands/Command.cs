@@ -5,11 +5,11 @@ namespace MicroRabbit.Domain.Core.Commands
 {
     public abstract class Command : Message
     {
-        public DateTime Timespan { get; protected set; }
+        public DateTime Timestamp { get; protected set; }
 
         protected Command()
         {
-            Timespan = DateTime.Now;
+            Timestamp = DateTime.Now;
         }
     }
 }

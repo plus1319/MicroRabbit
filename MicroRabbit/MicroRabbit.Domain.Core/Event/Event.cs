@@ -4,11 +4,11 @@ namespace MicroRabbit.Domain.Core.Event
 {
     public abstract class Event
     {
-        public DateTime Timespan { get;protected set; }
+        public DateTime Timestamp { get;protected set; }
 
         protected Event()
         {
-            Timespan = DateTime.Now;
+            Timestamp = DateTime.Now;
         }
     }
 }
