@@ -7,9 +7,9 @@ namespace MicroRabbit.Banking.Data.Repository
 {
     public class AccountRepository : IAccountRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly BankingDbContext _context;
 
-        public AccountRepository(ApplicationDbContext context)
+        public AccountRepository(BankingDbContext context)
         {
             _context = context;
         }

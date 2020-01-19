@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MicroRabbit.Banking.Data.Context
 {
-   public class ApplicationDbContext : DbContext
+   public class BankingDbContext : DbContext
     {
         public DbSet<Account> Accounts { get; set; }
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public BankingDbContext(DbContextOptions options)
             : base(options)
         {
         }
